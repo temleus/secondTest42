@@ -15,8 +15,8 @@ All three libraries must be added as library projects.
 
 + add android support package dependency (libs\android-support-v4.jar or your local jar)
 
-! applicationId = ... at line 221 com.facebook.Session.java must be replaced with 
-  applicationId = "387110658074885"; (because Manifest metadata parsing isn't implemented in Robolectric)
++ ! `applicationId = Utility.getMetadataApplicationId(context);` at line 221 com.facebook.Session.java must be replaced with 
+  `applicationId = "387110658074885";` (because Manifest metadata parsing isn't implemented in Robolectric)
 
 **Test module**
 
