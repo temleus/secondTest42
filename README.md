@@ -25,7 +25,7 @@ Project contains inner module named 'test' that is dependent on outer module (sc
 and on test libraries:
 robolectric-x.x.jar and junit-x.x.jar located at test/libs directory
 
-! dependencies must be added in that order: http://i.imgur.com/4K4dEFS.png
+! dependencies must be added in that order: http://i.imgur.com/7ozkEkM.png
 
 test/src directory must be marked as 'test sources'
 
