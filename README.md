@@ -11,7 +11,9 @@ https://github.com/JakeWharton/Android-ViewPagerIndicator.git
 
 The resulting folder, facebook-android-sdk-x.x.x, contains the SDK itself, samples and others.
 
-All three libraries must be added as library modules.
+All three libraries must be added as library projects.
+
++ add android support package dependency (libs\android-support-v4.jar or your local jar)
 
 **Test module**
 
