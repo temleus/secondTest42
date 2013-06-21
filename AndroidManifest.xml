@@ -6,9 +6,11 @@
 
     <uses-sdk android:minSdkVersion="7" android:targetSdkVersion="14"/>
 
-    <application android:label="@string/app_name" android:icon="@drawable/ic_launcher">
-        <activity android:name="MyActivity"
-                  android:label="@string/app_name">
+    <application android:name="com.task.TestApplication"
+            android:label="@string/app_name" android:icon="@drawable/ic_launcher">
+        <activity android:name=".MainActivity"
+                  android:label="@string/app_name"
+                  android:theme="@style/Theme.Fascinating">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
