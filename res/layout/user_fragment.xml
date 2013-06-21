@@ -19,6 +19,15 @@
                    android:paddingLeft="4dp"
                    android:paddingTop="4dp"/>
 
+        <com.facebook.widget.ProfilePictureView
+                android:id="@+id/profile_pic"
+                android:layout_width="128px"
+                android:layout_height="128px"
+                android:paddingLeft="4dp"
+                android:paddingTop="4dp"
+                android:visibility="gone"/>
+
+
         <LinearLayout android:orientation="vertical"
                       android:layout_width="wrap_content"
                       android:layout_height="wrap_content"
@@ -61,6 +70,27 @@
                           android:layout_height="wrap_content"
                           android:layout_alignBottom="@+id/editEmail"/>
         </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout android:orientation="horizontal"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:layout_gravity="bottom|center_horizontal">
+
+        <com.facebook.widget.LoginButton
+                android:id="@+id/authButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingBottom="20dp"
+                android:layout_gravity="bottom"/>
+
+        <ImageView android:id="@+id/syncButton"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:src="@drawable/content_import_export"
+                   android:visibility="gone"
+                   android:paddingTop="5dp"
+                   android:paddingLeft="10dp"/>
     </LinearLayout>
 
 </LinearLayout>
