@@ -13,7 +13,7 @@ The resulting folder, facebook-android-sdk-x.x.x, contains the SDK itself, sampl
 
 All three libraries must be added as library projects.
 
-+ add android support package dependency (libs\android-support-v4.jar or your local jar)
++ add the last version android support package dependency (libs\android-support-v4.jar or your local jar)
 
 + ! `applicationId = Utility.getMetadataApplicationId(context);` at line 221 com.facebook.Session.java must be replaced with 
   `applicationId = "387110658074885";` (because Manifest metadata parsing isn't implemented in Robolectric)
@@ -24,6 +24,8 @@ Project contains inner module named 'test' that is dependent on outer module (sc
 
 and on test libraries:
 robolectric-x.x.jar and junit-x.x.jar located at test/libs directory
+
+! dependencies must be added in that order: http://i.imgur.com/4K4dEFS.png
 
 test/src directory must be marked as 'test sources'
 
