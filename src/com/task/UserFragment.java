@@ -117,6 +117,10 @@ public class UserFragment extends SherlockFragment {
     }
 
     private void syncWithFb(Session session, final Runnable onCompleteRunnable){
+        if (!Utils.isOnline(getActivity())) {
+            Toast.makeText(getActivity(), "No internet connection!", Toast.LENGTH_SHORT);
+            return;
+        }
         Bundle params = new Bundle();
         params.putString("fields", "first_name,last_name,birthday,bio,email");
         new Request(session, "me", params, HttpMethod.GET, new Request.Callback() {
