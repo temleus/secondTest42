@@ -35,6 +35,10 @@
                       android:paddingTop="10dp"
                       android:layout_weight="1">
 
+            <RelativeLayout android:orientation="horizontal"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content">
+
                 <LinearLayout android:id="@+id/container"
                               android:orientation="vertical"
                               android:layout_width="wrap_content"
@@ -54,21 +58,64 @@
                 </LinearLayout>
 
 
-                <TextView android:id="@+id/birthdate"
+                <ImageView android:id="@+id/editNameAndSurname"
+                           android:layout_width="wrap_content"
+                           android:layout_height="wrap_content"
+                           android:src="@drawable/content_edit"
+                           android:layout_toRightOf="@id/container"
+                           android:layout_centerVertical="true"
+                           android:paddingLeft="10dp"/>
+            </RelativeLayout>
+
+            <LinearLayout android:orientation="horizontal"
                           android:layout_width="wrap_content"
-                          android:layout_height="wrap_content"
-                          android:layout_alignBottom="@+id/editBirthdate"/>
+                          android:layout_height="wrap_content">
+
+                <TextView android:id="@+id/birthdate"
+                          android:layout_width="0dp"
+                          android:layout_weight="1"
+                          android:layout_height="wrap_content"/>
+
+                <ImageView android:id="@+id/editBirthdate"
+                           android:layout_width="wrap_content"
+                           android:layout_height="wrap_content"
+                           android:layout_weight="0"
+                           android:src="@drawable/content_edit"/>
+            </LinearLayout>
+
+            <LinearLayout android:orientation="horizontal"
+                          android:layout_width="wrap_content"
+                          android:layout_height="wrap_content">
 
                 <TextView android:id="@+id/bio"
-                          android:layout_width="wrap_content"
+                          android:layout_width="0dp"
+                          android:layout_weight="1"
                           android:layout_height="wrap_content"
                           android:singleLine="false"/>
 
+                <ImageView android:id="@+id/editBio"
+                           android:layout_width="wrap_content"
+                           android:layout_height="wrap_content"
+                           android:layout_weight="0"
+                           android:src="@drawable/content_edit"/>
+            </LinearLayout>
+
+            <LinearLayout android:orientation="horizontal"
+                          android:layout_width="wrap_content"
+                          android:layout_height="wrap_content">
 
                 <TextView android:id="@+id/email"
                           android:layout_width="wrap_content"
                           android:layout_height="wrap_content"
                           android:layout_alignBottom="@+id/editEmail"/>
+
+                <ImageView android:id="@+id/editEmail"
+                           android:layout_width="wrap_content"
+                           android:layout_height="wrap_content"
+                           android:layout_weight="0"
+                           android:src="@drawable/content_edit"/>
+            </LinearLayout>
+
         </LinearLayout>
     </LinearLayout>
 
