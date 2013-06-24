@@ -1,5 +1,6 @@
 package com.task.dialog;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -41,9 +42,9 @@ public class IntroductionDialog extends SherlockDialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        View cutomView = inflater.inflate(R.layout.fb_dialog, null);
+        View customView = inflater.inflate(R.layout.fb_dialog, null);
         dialog = new AlertDialog.Builder(getActivity())
-                .setView(cutomView)
+                .setView(customView)
                 .setTitle("Hi dear user")
                 .setMessage("You are not logged in facebook")
                 .setNegativeButton("Quit application", new DialogInterface.OnClickListener() {
@@ -53,7 +54,7 @@ public class IntroductionDialog extends SherlockDialogFragment {
                     }
                 })
                 .create();
-        LoginButton loginButton = (LoginButton) cutomView.findViewById(R.id.loginBtn);
+        LoginButton loginButton = (LoginButton) customView.findViewById(R.id.loginBtn);
         loginButton.setFragment(this);
         loginButton.setReadPermissions(Constants.FB_PERMISSIONS);
         return dialog;
@@ -63,6 +64,16 @@ public class IntroductionDialog extends SherlockDialogFragment {
         if (state.isOpened()) {
             Log.i(TAG, "Logged in...");
             dialog.dismiss();  // close dialog when user logged in
+        }
+    }
+
+    @Override
+    public void onDismiss(DialogInterface dialog) {
+        super.onDismiss(dialog);
+        Session s = Session.getActiveSession();
+        if(s == null || !s.getState().isOpened()){
+            Activity a = getActivity();
+            if(a != null) a.finish();
         }
     }
 
