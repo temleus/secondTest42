@@ -1,5 +1,6 @@
 package com.task.dialog;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -15,6 +16,7 @@ import com.facebook.UiLifecycleHelper;
 import com.facebook.widget.LoginButton;
 import com.task.Constants;
 import com.task.R;
+import com.task.Utils;
 
 /**
  * @author Leus Artem
@@ -35,15 +37,16 @@ public class IntroductionDialog extends SherlockDialogFragment {
                 onSessionStateChange(session, state, exception);
             }
         });
+        setCancelable(false);
         uiHelper.onCreate(savedInstanceState);
     }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        View cutomView = inflater.inflate(R.layout.fb_dialog, null);
+        View customView = inflater.inflate(R.layout.fb_dialog, null);
         dialog = new AlertDialog.Builder(getActivity())
-                .setView(cutomView)
+                .setView(customView)
                 .setTitle("Hi dear user")
                 .setMessage("You are not logged in facebook")
                 .setNegativeButton("Quit application", new DialogInterface.OnClickListener() {
@@ -53,7 +56,7 @@ public class IntroductionDialog extends SherlockDialogFragment {
                     }
                 })
                 .create();
-        LoginButton loginButton = (LoginButton) cutomView.findViewById(R.id.loginBtn);
+        LoginButton loginButton = (LoginButton) customView.findViewById(R.id.loginBtn);
         loginButton.setFragment(this);
         loginButton.setReadPermissions(Constants.FB_PERMISSIONS);
         return dialog;
@@ -61,7 +64,7 @@ public class IntroductionDialog extends SherlockDialogFragment {
 
     private void onSessionStateChange(Session session, SessionState state, Exception exception) {
         if (state.isOpened()) {
-            Log.i(TAG, "Logged in...");
+            dismiss();
             dialog.dismiss();  // close dialog when user logged in
         }
     }
@@ -77,7 +80,6 @@ public class IntroductionDialog extends SherlockDialogFragment {
                 (session.isOpened() || session.isClosed()) ) {
             onSessionStateChange(session, session.getState(), null);
         }
-
         uiHelper.onResume();
     }
 

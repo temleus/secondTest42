@@ -3,6 +3,7 @@ package com.task;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import com.facebook.Session;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -49,6 +50,11 @@ public class Utils {
         ConnectivityManager cm = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo netInfo = cm.getActiveNetworkInfo();
         return netInfo != null && netInfo.isConnected();
+    }
+
+    public static boolean isFbAuthenticated(){
+        Session currentSession = Session.getActiveSession();
+        return currentSession != null && currentSession.getState().isOpened();
     }
 
 }

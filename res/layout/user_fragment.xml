@@ -129,15 +129,16 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingBottom="20dp"
-                android:layout_gravity="bottom"/>
+                android:layout_gravity="bottom"
+                android:visibility="gone"/>
 
-        <ImageView android:id="@+id/syncButton"
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
-                   android:src="@drawable/content_import_export"
-                   android:visibility="gone"
-                   android:paddingTop="5dp"
-                   android:paddingLeft="10dp"/>
+        <!--<ImageView android:id="@+id/syncButton"-->
+                   <!--android:layout_width="wrap_content"-->
+                   <!--android:layout_height="wrap_content"-->
+                   <!--android:src="@drawable/content_import_export"-->
+                   <!--android:visibility="gone"-->
+                   <!--android:paddingTop="5dp"-->
+                   <!--android:paddingLeft="10dp"/>-->
     </LinearLayout>
 
 </LinearLayout>
