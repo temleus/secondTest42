@@ -37,7 +37,7 @@ public class FacebookTests {
         assertTrue(facebookPic instanceof ProfilePictureView);
     }
 
-    @Test
+   /* @Test
     public void hasSyncButtonTest(){
         View syncBtn = userFragment.getView().findViewById(R.id.syncButton);
         assertNotNull(syncBtn);
@@ -52,5 +52,5 @@ public class FacebookTests {
         } else {
             assertThat(syncBtn.getVisibility(), equalTo(View.GONE));
         }
-    }
+    }*/
 }
