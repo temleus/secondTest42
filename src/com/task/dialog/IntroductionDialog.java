@@ -16,6 +16,7 @@ import com.facebook.UiLifecycleHelper;
 import com.facebook.widget.LoginButton;
 import com.task.Constants;
 import com.task.R;
+import com.task.Utils;
 
 /**
  * @author Leus Artem
@@ -36,6 +37,7 @@ public class IntroductionDialog extends SherlockDialogFragment {
                 onSessionStateChange(session, state, exception);
             }
         });
+        setCancelable(false);
         uiHelper.onCreate(savedInstanceState);
     }
 
@@ -68,16 +70,6 @@ public class IntroductionDialog extends SherlockDialogFragment {
     }
 
     @Override
-    public void onDismiss(DialogInterface dialog) {
-        super.onDismiss(dialog);
-        Session s = Session.getActiveSession();
-        if(s == null || !s.getState().isOpened()){
-            Activity a = getActivity();
-            if(a != null) a.finish();
-        }
-    }
-
-    @Override
     public void onResume() {
         super.onResume();
         // For scenarios where the fragment is launched and user
@@ -88,7 +80,6 @@ public class IntroductionDialog extends SherlockDialogFragment {
                 (session.isOpened() || session.isClosed()) ) {
             onSessionStateChange(session, session.getState(), null);
         }
-
         uiHelper.onResume();
     }
 

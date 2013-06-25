@@ -19,6 +19,8 @@ import com.facebook.widget.ProfilePictureView;
 import com.task.db.UserDbHelper;
 import com.task.dialog.IntroductionDialog;
 
+import static com.task.Utils.*;
+
 /**
  * @author Leus Artem
  * @since 17.06.13
@@ -30,8 +32,9 @@ public class UserFragment extends SherlockFragment {
     private UiLifecycleHelper uiHelper;
     private TextView nameView, surnameView, birthdateView, bioView, emailView;
     private ProfilePictureView profilePictureView;
-    private ImageView defaultProfilePic, syncButton;
+    private ImageView defaultProfilePic;
     private  TestApplication app;
+    LoginButton authButton;
 
     private Session.StatusCallback callback = new Session.StatusCallback() {
         @Override
@@ -48,30 +51,19 @@ public class UserFragment extends SherlockFragment {
         uiHelper.onCreate(savedInstanceState);
 
         app = (TestApplication) getActivity().getApplicationContext();
-
-        // check connection availability
-        if (!Utils.isOnline(getActivity())) {
-            Toast.makeText(getActivity(), "No internet connection!", Toast.LENGTH_SHORT);
-        } else {
-            // show dialog in case user isn't logged in FB
-            Session currentSession = Session.getActiveSession();
-            if (currentSession == null || !currentSession.getState().isOpened()) {
-//                FragmentManager fm = getActivity().getSupportFragmentManager();
-                FragmentManager fm = getChildFragmentManager();
-                DialogFragment dialog = new IntroductionDialog();
-                dialog.show(fm, "dialog");
-            }
-        }
     }
+
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.user_fragment, container, false);
-
-        LoginButton authButton = (LoginButton) view.findViewById(R.id.authButton);
+        authButton = (LoginButton) view.findViewById(R.id.authButton);
         authButton.setReadPermissions(Constants.FB_PERMISSIONS);
         authButton.setFragment(this);
-
+        if(isFbAuthenticated()){
+            authButton.setVisibility(View.VISIBLE);
+        }
         return view;
     }
 
@@ -86,18 +78,6 @@ public class UserFragment extends SherlockFragment {
 
         profilePictureView = (ProfilePictureView) view.findViewById(R.id.profile_pic);
         defaultProfilePic = (ImageView) view.findViewById(R.id.default_user_pic);
-        syncButton = (ImageView) view.findViewById(R.id.syncButton);
-        syncButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                syncWithFb(Session.getActiveSession(), new Runnable() {
-                    @Override
-                    public void run() {
-                        updateUserUI();
-                    }
-                });
-            }
-        });
         updateUserUI();
     }
 
@@ -151,9 +131,18 @@ public class UserFragment extends SherlockFragment {
     private void onSessionStateChange(Session session, SessionState state, Exception exception) {
         if (state.isOpened()) {
             Log.i(TAG, "Logged in...");
-            syncButton.setVisibility(View.VISIBLE);
+            syncWithFb(Session.getActiveSession(), new Runnable() {
+                    @Override
+                    public void run() {
+                        updateUserUI();
+                    }
+                });
+            authButton.setVisibility(View.VISIBLE);
         } else if (state.isClosed()) {
-            syncButton.setVisibility(View.GONE);
+            if(authButton.getVisibility() == View.VISIBLE){ // case when user pressed "Logout" button
+                getActivity().finish();
+                authButton.setVisibility(View.GONE);
+            }
             Log.i(TAG, "Logged out...");
         }
     }
@@ -174,8 +163,19 @@ public class UserFragment extends SherlockFragment {
                 (session.isOpened() || session.isClosed()) ) {
             onSessionStateChange(session, session.getState(), null);
         }
-
         uiHelper.onResume();
+
+        // check connection availability
+        if (!Utils.isOnline(getActivity())) {
+            Toast.makeText(getActivity(), "No internet connection!", Toast.LENGTH_SHORT);
+        } else {
+            // show dialog in case user isn't logged in FB
+            if (!isFbAuthenticated()) {
+                FragmentManager fm = getChildFragmentManager();
+                DialogFragment dialog = new IntroductionDialog();
+                dialog.show(fm, "dialog");
+            }
+        }
     }
 
     @Override
