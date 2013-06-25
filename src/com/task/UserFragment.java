@@ -4,10 +4,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
+import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -17,7 +19,12 @@ import com.facebook.model.GraphUser;
 import com.facebook.widget.LoginButton;
 import com.facebook.widget.ProfilePictureView;
 import com.task.db.UserDbHelper;
+import com.task.dialog.DatePickerDialog;
+import com.task.dialog.EditFieldDialog;
+import com.task.dialog.EditTwoFieldsDialog;
 import com.task.dialog.IntroductionDialog;
+
+import java.util.Calendar;
 
 import static com.task.Utils.*;
 
@@ -35,6 +42,7 @@ public class UserFragment extends SherlockFragment {
     private ImageView defaultProfilePic;
     private  TestApplication app;
     LoginButton authButton;
+    private boolean firstFBLogin = true;
 
     private Session.StatusCallback callback = new Session.StatusCallback() {
         @Override
@@ -65,7 +73,87 @@ public class UserFragment extends SherlockFragment {
         if(isFbAuthenticated()){
             authButton.setVisibility(View.VISIBLE);
         }
+        createButtonsListeners(view);
         return view;
+    }
+
+    private void createButtonsListeners(View rootView){
+        final UserDbHelper.UserEntity iAm = app.getMyself();
+
+        ImageView editNameSurnameBtn = (ImageView) rootView.findViewById(R.id.editNameAndSurname);
+        ImageView editBirthdayBtn = (ImageView) rootView.findViewById(R.id.editBirthdate);
+        ImageView editBioBtn = (ImageView) rootView.findViewById(R.id.editBio);
+        ImageView editEmailBtn = (ImageView) rootView.findViewById(R.id.editEmail);
+
+        final Runnable onUpdateUiRunnable = new Runnable() {
+            @Override
+            public void run() {
+                updateUserUI();
+            }
+        };
+
+        final FragmentManager fm = getFragmentManager();
+
+        editNameSurnameBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new EditTwoFieldsDialog(iAm.name, iAm.surname, "Edit", new EditTwoFieldsDialog.OnDataChangedLitener() {
+                    @Override
+                    public void onChanged(String val1, String val2) {
+                        iAm.name = val1;
+                        iAm.surname = val2;
+                        app.saveMyself(onUpdateUiRunnable);
+                    }
+                }).show(fm, "editName");
+            }
+        });
+
+        editBirthdayBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new DatePickerDialog(iAm.birthdate, new android.app.DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                        Calendar c = Calendar.getInstance();
+                        c.set(year, monthOfYear, dayOfMonth);
+                        iAm.birthdate = c.getTime();
+                        app.saveMyself(onUpdateUiRunnable);
+                    }
+                }).show(fm, "editBirth");
+            }
+        });
+
+        editBioBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new EditFieldDialog(iAm.bio, "Edit your bio", InputType.TYPE_CLASS_TEXT
+                        | InputType.TYPE_TEXT_FLAG_MULTI_LINE, new EditFieldDialog.OnDataChangedLitener() {
+                    @Override
+                    public void onChanged(String val1) {
+                        iAm.bio = val1;
+                        app.saveMyself(onUpdateUiRunnable);
+                    }
+                }).show(fm, "editBio");
+            }
+        });
+
+        editEmailBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new EditFieldDialog(iAm.email, "Edit your email", InputType.TYPE_CLASS_TEXT
+                        | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS, new EditFieldDialog.OnDataChangedLitener() {
+                    @Override
+                    public void onChanged(String val1) {
+                        if(!Utils.isValidEmail(val1)){
+                            Toast.makeText(getActivity(), "Not valid email address", Toast.LENGTH_SHORT).show();
+                        } else {
+                            iAm.email = val1;
+                            app.saveMyself(onUpdateUiRunnable);
+                        }
+                    }
+                }).show(fm, "editMail");
+            }
+        });
     }
 
     @Override
@@ -132,12 +220,16 @@ public class UserFragment extends SherlockFragment {
     private void onSessionStateChange(Session session, SessionState state, Exception exception) {
         if (state.isOpened()) {
             Log.i(TAG, "Logged in...");
-            syncWithFb(Session.getActiveSession(), new Runnable() {
+            if(firstFBLogin){
+                firstFBLogin = false;
+                syncWithFb(Session.getActiveSession(), new Runnable() {
                     @Override
                     public void run() {
+                        Log.i(TAG, "synchronized with FB");
                         updateUserUI();
                     }
                 });
+            }
             authButton.setVisibility(View.VISIBLE);
         } else if (state.isClosed()) {
             if(authButton.getVisibility() == View.VISIBLE){ // case when user pressed "Logout" button
