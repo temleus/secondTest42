@@ -64,7 +64,7 @@ public class IntroductionDialog extends SherlockDialogFragment {
 
     private void onSessionStateChange(Session session, SessionState state, Exception exception) {
         if (state.isOpened()) {
-            Log.i(TAG, "Logged in...");
+            dismiss();
             dialog.dismiss();  // close dialog when user logged in
         }
     }

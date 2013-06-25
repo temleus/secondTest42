@@ -47,6 +47,7 @@ public class UserFragment extends SherlockFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        setRetainInstance(true);
         uiHelper = new UiLifecycleHelper(this.getActivity(), callback);
         uiHelper.onCreate(savedInstanceState);
 
