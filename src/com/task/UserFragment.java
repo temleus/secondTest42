@@ -93,8 +93,8 @@ public class UserFragment extends SherlockFragment {
         if(iAm.name != null) nameView.setText(iAm.name);
         if(iAm.surname != null) surnameView.setText(iAm.surname);
         if(iAm.birthdate != null) birthdateView.setText(Utils.convertDateToString(iAm.birthdate));
-        if(iAm.bio != null) bioView.setText(iAm.bio);
-        if(iAm.email != null) emailView.setText(iAm.email);
+        /*if(iAm.bio != null)*/ bioView.setText(iAm.bio != null ? iAm.bio : "You have no bio");
+        /*if(iAm.email != null) */emailView.setText(iAm.email != null ? iAm.email : "You have no email");
     }
 
     private void syncWithFb(Session session, final Runnable onCompleteRunnable){
