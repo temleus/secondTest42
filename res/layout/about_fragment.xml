@@ -9,7 +9,7 @@
               android:layout_height="fill_parent"
               style="@style/TextAppearance.Sherlock.Widget.ActionBar.Title"
               android:textStyle="bold"
-              android:text="Information about myself"
+              android:text="Created by Artem Leus"
               android:gravity="center"/>
 
 </LinearLayout>
