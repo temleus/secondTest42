@@ -27,6 +27,7 @@ public class MainActivity extends SherlockFragmentActivity {
         adapter = new SimpleFragmentPagerAdapter(this);
 
         adapter.addFragment("User", UserFragment.class, null);
+        adapter.addFragment("Friends", FriendListFragment.class, null);
         adapter.addFragment("About", AboutFragment.class, null);
 
         pager = (ViewPager)findViewById(R.id.pager);
