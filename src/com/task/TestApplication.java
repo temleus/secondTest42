@@ -14,6 +14,7 @@ import java.util.Calendar;
 public class TestApplication extends Application {
 
     private volatile UserDbHelper.UserEntity iAm;
+    public boolean synchronizedWithFB = false;
 
     @Override
     public void onCreate() {

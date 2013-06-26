@@ -42,7 +42,6 @@ public class UserFragment extends SherlockFragment {
     private ImageView defaultProfilePic;
     private  TestApplication app;
     LoginButton authButton;
-    private boolean firstFBLogin = true;
 
     private Session.StatusCallback callback = new Session.StatusCallback() {
         @Override
@@ -192,6 +191,7 @@ public class UserFragment extends SherlockFragment {
         }
         Bundle params = new Bundle();
         params.putString("fields", "first_name,last_name,birthday,bio,email");
+        Log.i(TAG, "synchronizing with FB");
         new Request(session, "me", params, HttpMethod.GET, new Request.Callback() {
             @Override
             public void onCompleted(Response response) {
@@ -220,11 +220,11 @@ public class UserFragment extends SherlockFragment {
     private void onSessionStateChange(Session session, SessionState state, Exception exception) {
         if (state.isOpened()) {
             Log.i(TAG, "Logged in...");
-            if(firstFBLogin){
-                firstFBLogin = false;
+            if(!app.synchronizedWithFB){
                 syncWithFb(Session.getActiveSession(), new Runnable() {
                     @Override
                     public void run() {
+                        app.synchronizedWithFB = true;
                         Log.i(TAG, "synchronized with FB");
                         updateUserUI();
                     }
@@ -238,10 +238,6 @@ public class UserFragment extends SherlockFragment {
             }
             Log.i(TAG, "Logged out...");
         }
-    }
-
-    public boolean isSessionOpened(){
-        return Session.getActiveSession() == null ? false : Session.getActiveSession().isOpened();
     }
 
     @Override
