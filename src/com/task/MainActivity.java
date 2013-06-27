@@ -1,13 +1,20 @@
 package com.task;
 
 import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.Signature;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Base64;
+import android.util.Log;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.viewpagerindicator.TabPageIndicator;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 
 /**
@@ -24,6 +31,8 @@ public class MainActivity extends SherlockFragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
 
+        printKeyHash();
+
         adapter = new SimpleFragmentPagerAdapter(this);
 
         adapter.addFragment("User", UserFragment.class, null);
@@ -37,6 +46,21 @@ public class MainActivity extends SherlockFragmentActivity {
         indicator.setViewPager(pager);
 
         pager.setCurrentItem(0);
+    }
+
+    private void printKeyHash(){
+        try {
+            PackageInfo info = getPackageManager().getPackageInfo(
+                    "com.task", PackageManager.GET_SIGNATURES);
+            for (Signature signature : info.signatures) {
+                MessageDigest md = MessageDigest.getInstance("SHA");
+                md.update(signature.toByteArray());
+                Log.e("MY KEY HASH:",
+                        Base64.encodeToString(md.digest(), Base64.DEFAULT));
+            }
+        } catch (PackageManager.NameNotFoundException e) {
+
+        } catch (NoSuchAlgorithmException e) {}
     }
 
 
