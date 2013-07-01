@@ -36,8 +36,8 @@ public class FriendListFragment extends SherlockListFragment {
     private AdapterView.OnItemClickListener onItemClickListener = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-            String userId = (String) view.getTag();
-            startActivity(getOpenFacebookIntent(getActivity(), userId));
+            ViewHolder holder = (ViewHolder) view.getTag();
+            startActivity(getOpenFacebookIntent(getActivity(), holder.fbId));
         }
     };
 
@@ -124,6 +124,13 @@ public class FriendListFragment extends SherlockListFragment {
         }
     }
 
+    public static class ViewHolder {
+
+        ProfilePictureView profilePic;
+        TextView nameView;
+        String fbId;
+    }
+
     public static class FriendListAdapter extends ArrayAdapter<GraphUser> {
 
         public FriendListAdapter(Context context) {
@@ -133,17 +140,21 @@ public class FriendListFragment extends SherlockListFragment {
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             GraphUser user = getItem(position);
+            ViewHolder holder;
             if (convertView == null) {
+                holder = new ViewHolder();
                 convertView = LayoutInflater.from(getContext()).inflate(R.layout.friend_list_row, null);
+
+                holder.profilePic = (ProfilePictureView) convertView.findViewById(R.id.userPic);
+                holder.nameView =  (TextView) convertView.findViewById(R.id.name);
+                convertView.setTag(holder);
+            } else {
+                holder=(ViewHolder)convertView.getTag();
             }
 
-            ProfilePictureView profilePic = (ProfilePictureView) convertView.findViewById(R.id.userPic);
-            profilePic.setProfileId(user.getId());
-
-            TextView nameView = (TextView) convertView.findViewById(R.id.name);
-            nameView.setText(user.getName());
-
-            convertView.setTag(user.getId());
+            holder.profilePic.setProfileId(user.getId());
+            holder.nameView.setText(user.getName());
+            holder.fbId = user.getId();
 
             return convertView;
         }
