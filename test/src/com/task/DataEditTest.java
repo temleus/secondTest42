@@ -1,12 +1,19 @@
 package com.task;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.shadows.ShadowAlertDialog;
+
+import static org.junit.Assert.*;
 
 /**
  * @author Leus Artem
@@ -34,9 +41,8 @@ public class DataEditTest {
         assert(userFragmentView.findViewById(R.id.editEmail) instanceof ImageView);
     }
 
-   /* @Test
-   * TODO we are crating dialogs in different way (through DialogFragment) so can't test it. Find another way. ShadowAlertDialog.getLatestAlertDialog() returns null
 
+   @Test
     public void dialogTitleTest(){
         View userFragmentView = userFragment.getView();
         ImageView editBioBtn = (ImageView) userFragmentView.findViewById(R.id.editBio);
@@ -64,9 +70,35 @@ public class DataEditTest {
         Button saveButton = alertDialog.getButton(Dialog.BUTTON_POSITIVE);
         saveButton.performClick();
 
-        assertTrue(alertDialog.isShowing());
+        assertTrue(alertDialog.isShowing());   // dialog shouldn't be closed with empty text input
     }
-      */
+
+    @Test
+    public void testSaveatdb(){
+        String testBio = "tBiooo";
+        View userFragmentView = userFragment.getView();
+        ImageView editBioBtn = (ImageView) userFragmentView.findViewById(R.id.editBio);
+
+        editBioBtn.performClick();
+        AlertDialog alertDialog = ShadowAlertDialog.getLatestAlertDialog();
+
+        ShadowAlertDialog shadowAlertDialog = Robolectric.shadowOf(alertDialog);
+        EditText editText = (EditText) shadowAlertDialog.getView().findViewById(R.id.firstEdit);
+        editText.setText(testBio);
+
+        Button saveButton = alertDialog.getButton(Dialog.BUTTON_POSITIVE);
+        saveButton.performClick();
+
+        try {
+            Thread.sleep(2000); // waiting for db update
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        TestApplication app = (TestApplication) userFragment.getActivity().getApplicationContext();
+        assert(app.getMyself().bio.equals(testBio));
+    }
+
 
 
 }
