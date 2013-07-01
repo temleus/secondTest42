@@ -42,7 +42,6 @@ public class UserFragment extends SherlockFragment {
     private ImageView defaultProfilePic;
     private  TestApplication app;
     LoginButton authButton;
-    private boolean firstFBLogin = true;
 
     private Session.StatusCallback callback = new Session.StatusCallback() {
         @Override
@@ -178,11 +177,11 @@ public class UserFragment extends SherlockFragment {
             profilePictureView.setVisibility(View.VISIBLE);
             defaultProfilePic.setVisibility(View.GONE);
         }
-        if(iAm.name != null) nameView.setText(iAm.name);
-        if(iAm.surname != null) surnameView.setText(iAm.surname);
-        if(iAm.birthdate != null) birthdateView.setText(Utils.convertDateToString(iAm.birthdate));
-        /*if(iAm.bio != null)*/ bioView.setText(iAm.bio != null ? iAm.bio : "You have no bio");
-        /*if(iAm.email != null) */emailView.setText(iAm.email != null ? iAm.email : "You have no email");
+        /*if(iAm.name != null)*/ nameView.setText(iAm.name);
+        /*if(iAm.surname != null)*/ surnameView.setText(iAm.surname);
+       /* if(iAm.birthdate != null)*/ birthdateView.setText(Utils.convertDateToString(iAm.birthdate));
+        bioView.setText(iAm.bio);
+        emailView.setText(iAm.email);
     }
 
     private void syncWithFb(Session session, final Runnable onCompleteRunnable){
@@ -192,6 +191,7 @@ public class UserFragment extends SherlockFragment {
         }
         Bundle params = new Bundle();
         params.putString("fields", "first_name,last_name,birthday,bio,email");
+        Log.i(TAG, "synchronizing with FB");
         new Request(session, "me", params, HttpMethod.GET, new Request.Callback() {
             @Override
             public void onCompleted(Response response) {
@@ -201,8 +201,8 @@ public class UserFragment extends SherlockFragment {
                 iAm.name = fbUser.getFirstName();
                 iAm.surname = fbUser.getLastName();
                 iAm.birthdate = Utils.convertStringToDate(fbUser.getBirthday());
-                iAm.bio = (String) fbUser.getProperty("bio");
-                iAm.email = (String) fbUser.getProperty("email");
+                iAm.bio = fbUser.getProperty("bio") != null ? (String) fbUser.getProperty("bio"): "bio unspecified";
+                iAm.email = fbUser.getProperty("email") != null ? (String) fbUser.getProperty("email") : "email unspecified";
                 iAm.fbId = fbUser.getId();
 
                 UserDbHelper userDb = new UserDbHelper(getActivity().getBaseContext());
@@ -220,11 +220,11 @@ public class UserFragment extends SherlockFragment {
     private void onSessionStateChange(Session session, SessionState state, Exception exception) {
         if (state.isOpened()) {
             Log.i(TAG, "Logged in...");
-            if(firstFBLogin){
-                firstFBLogin = false;
+            if(!app.isSynchronizedWithFB()){
                 syncWithFb(Session.getActiveSession(), new Runnable() {
                     @Override
                     public void run() {
+                        app.setSynchronizedWithFB(true);
                         Log.i(TAG, "synchronized with FB");
                         updateUserUI();
                     }
@@ -236,12 +236,9 @@ public class UserFragment extends SherlockFragment {
                 getActivity().finish();
                 authButton.setVisibility(View.GONE);
             }
+            app.setSynchronizedWithFB(false);
             Log.i(TAG, "Logged out...");
         }
-    }
-
-    public boolean isSessionOpened(){
-        return Session.getActiveSession() == null ? false : Session.getActiveSession().isOpened();
     }
 
     @Override
