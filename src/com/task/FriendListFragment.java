@@ -176,7 +176,7 @@ public class FriendListFragment extends SherlockListFragment {
                 holder.profilePic = (ProfilePictureView) convertView.findViewById(R.id.userPic);
                 holder.nameView =  (TextView) convertView.findViewById(R.id.name);
 
-                final Spinner prioritySpinner = (Spinner) convertView.findViewById(R.id.priority_spinner);
+               final Spinner prioritySpinner = (Spinner) convertView.findViewById(R.id.priority_spinner);
                 ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter.createFromResource(getContext()
                         , R.array.priorities_array, android.R.layout.simple_spinner_item);
                 spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
