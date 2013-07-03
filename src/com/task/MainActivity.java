@@ -31,7 +31,7 @@ public class MainActivity extends SherlockFragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
 
-        printKeyHash();
+//        printKeyHash();
 
         adapter = new SimpleFragmentPagerAdapter(this);
 
@@ -47,6 +47,8 @@ public class MainActivity extends SherlockFragmentActivity {
 
         pager.setCurrentItem(0);
     }
+
+
 
     private void printKeyHash(){
         try {

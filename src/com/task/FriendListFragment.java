@@ -4,23 +4,24 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-import android.widget.TextView;
+import android.widget.*;
 import com.actionbarsherlock.app.SherlockListFragment;
 import com.facebook.Request;
 import com.facebook.Response;
 import com.facebook.Session;
 import com.facebook.model.GraphUser;
 import com.facebook.widget.ProfilePictureView;
+import com.task.json.Friend;
+import com.task.json.GsonHelper;
 
-import java.util.List;
+import java.util.*;
 
+import static com.task.Utils.getU;
 import static com.task.Utils.isFbAuthenticated;
 
 /**
@@ -30,8 +31,12 @@ import static com.task.Utils.isFbAuthenticated;
 public class FriendListFragment extends SherlockListFragment {
 
     private static final String TAG = "FriendListFragment";
+    private final String prioritiesKey = "prioritiesKey";
     private FriendListAdapter adapter;
-    private List<GraphUser> users;
+    private List<GraphUser> fbUsers;
+    private Map<String, Friend> prioritizedFriends = new HashMap<String, Friend>();
+
+
 
     private AdapterView.OnItemClickListener onItemClickListener = new AdapterView.OnItemClickListener() {
         @Override
@@ -45,7 +50,12 @@ public class FriendListFragment extends SherlockListFragment {
         @Override
         public void run() {
             if (adapter != null && adapter.isEmpty()) {
-                for (GraphUser user : users) adapter.add(user);
+                for (GraphUser user : fbUsers) adapter.add(user);
+//                if(!adapter.isEmpty()){
+//                    adapter.clear();
+//                }
+//                Collection<GraphUser> prioritizedFbFriends = Utils.sortByPriority(prioritizedFriends, fbUsers);
+//                for (GraphUser user : fbUsers) adapter.add(user);
             }
             setLoading(getView(), false);
         }
@@ -70,13 +80,30 @@ public class FriendListFragment extends SherlockListFragment {
     @Override
     public void onResume() {
         super.onResume();
-        if (users == null) {
+        if (fbUsers == null) {
             setLoading(getView(), true);
             if (isFbAuthenticated()) fetchFriendListData(fillAdapterRunnable);
         } else {
             fillAdapterRunnable.run();
         }
+        if(prioritizedFriends.isEmpty()){
+            String friendsJson = PreferenceManager.getDefaultSharedPreferences(getActivity())
+                    .getString(prioritiesKey, "");
+            if(!friendsJson.isEmpty()){
+                Collection<Friend> friends = GsonHelper.deserialize(friendsJson);
+                for(Friend friend: friends){
+                    prioritizedFriends.put(friend.getId(), friend);
+                }
+            }
+        }
         Log.i(TAG, "onResume " + TAG);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        PreferenceManager.getDefaultSharedPreferences(getActivity())
+                .edit().putString(prioritiesKey, GsonHelper.serialize(prioritizedFriends.values())).commit();
     }
 
     @Override
@@ -96,12 +123,19 @@ public class FriendListFragment extends SherlockListFragment {
 
     private void fetchFriendListData(final Runnable onPostExecuteRunnable) {
         Session session = Session.getActiveSession();
-        // Asynchronously fetching friends list
+        // Asynchronously fetching prioritizedFriends list
         Request.executeMyFriendsRequestAsync(session, new Request.GraphUserListCallback() {
             @Override
             public void onCompleted(List<GraphUser> users, Response response) {
                     /* invoked in UI thread*/
-                FriendListFragment.this.users = users;
+                FriendListFragment.this.fbUsers = users;
+//                FriendListFragment.this.fbUsers = getU();
+                if(prioritizedFriends.isEmpty()){
+                    for(GraphUser fbUser: fbUsers){
+                        // filling map with default priorities fbUsers
+                        prioritizedFriends.put(fbUser.getId(), new Friend(fbUser.getId(), 0));
+                    }
+                }
                 if (onPostExecuteRunnable != null) {
                     onPostExecuteRunnable.run();
                 }
@@ -128,10 +162,11 @@ public class FriendListFragment extends SherlockListFragment {
 
         ProfilePictureView profilePic;
         TextView nameView;
+        Spinner spinner;
         String fbId;
     }
 
-    public static class FriendListAdapter extends ArrayAdapter<GraphUser> {
+    public class FriendListAdapter extends ArrayAdapter<GraphUser> {
 
         public FriendListAdapter(Context context) {
             super(context, 0);
@@ -147,6 +182,35 @@ public class FriendListFragment extends SherlockListFragment {
 
                 holder.profilePic = (ProfilePictureView) convertView.findViewById(R.id.userPic);
                 holder.nameView =  (TextView) convertView.findViewById(R.id.name);
+
+                final Spinner prioritySpinner = (Spinner) convertView.findViewById(R.id.priority_spinner);
+                ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter.createFromResource(getContext()
+                        , R.array.priorities_array, android.R.layout.simple_spinner_item);
+                spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                prioritySpinner.setAdapter(spinnerAdapter);
+                prioritySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                        GraphUser clickedUser = (GraphUser) prioritySpinner.getTag();
+                        Friend friend = prioritizedFriends.get(clickedUser.getId());
+                        String prioritySelected = (String) parent.getItemAtPosition(position);
+                        friend.setPriority(Utils.getPriorityByString(getContext(), prioritySelected));
+                        sort(new Comparator<GraphUser>() {
+                            @Override
+                            public int compare(GraphUser first, GraphUser second) {
+                                int fpriority = prioritizedFriends.get(first.getId()).getPriority();
+                                int spriority = prioritizedFriends.get(second.getId()).getPriority();
+                                return fpriority < spriority ? -1: 1;
+                            }
+                        });
+                        notifyDataSetChanged();
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) {/* nothing */}
+                });
+                holder.spinner = prioritySpinner;
+
                 convertView.setTag(holder);
             } else {
                 holder=(ViewHolder)convertView.getTag();
@@ -155,6 +219,11 @@ public class FriendListFragment extends SherlockListFragment {
             holder.profilePic.setProfileId(user.getId());
             holder.nameView.setText(user.getName());
             holder.fbId = user.getId();
+
+            Friend friend = prioritizedFriends.get(user.getId());
+            if(friend != null) holder.spinner.setSelection(friend.getPriority());
+
+            holder.spinner.setTag(user);
 
             return convertView;
         }

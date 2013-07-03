@@ -4,10 +4,15 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import com.facebook.Session;
+import com.facebook.model.GraphLocation;
+import com.facebook.model.GraphObject;
+import com.facebook.model.GraphUser;
+import com.task.json.Friend;
+import org.json.JSONObject;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.*;
 import java.util.regex.Pattern;
 
 /**
@@ -27,6 +32,31 @@ public class Utils {
                     "[a-zA-Z0-9][a-zA-Z0-9\\-]{0,25}" +
                     ")+"
     );
+
+//    public static Collection<GraphUser> sortByPriority(Map<String, Friend> prioritizedFriends, List<GraphUser> fbFriends){
+//        Map<Integer, GraphUser> treeMap = new TreeMap<Integer, GraphUser>(new Comparator<Integer>() {
+//            @Override
+//            public int compare(Integer l, Integer r) {
+//                return (l < r ) ? -1 : 1 ;
+//            }
+//        });
+//        for(GraphUser fbFriend: fbFriends){
+//            Friend friend = prioritizedFriends.get(fbFriend.getId());
+//            treeMap.put(friend.getPriority(), fbFriend);
+//        }
+//        return treeMap.values();
+//    }
+
+    /** 0 - the most prioritized user */
+    public static int getPriorityByString(Context context, String s){
+        String[] prioritiesArray = context.getResources().getStringArray(R.array.priorities_array);
+        for(int n = 0; n<prioritiesArray.length; n++){
+            if(prioritiesArray[n].equals(s)){
+                return n;
+            }
+        }
+        return -1;
+    }
 
     public static boolean isValidEmail(String email){
         return EMAIL_ADDRESS_PATTERN.matcher(email).matches();
@@ -55,6 +85,136 @@ public class Utils {
     public static boolean isFbAuthenticated(){
         Session currentSession = Session.getActiveSession();
         return currentSession != null && currentSession.getState().isOpened();
+    }
+
+    static String[] arr = new String[]{"1643842365", "1046185421","100002566215617", "100001139749276"};
+
+    public static List<GraphUser> getU(){
+        List<GraphUser> users = new ArrayList<GraphUser>();
+        for(int c=0; c< arr.length; c++) {
+            final int num = c;
+        users.add(new GraphUser() {
+            @Override
+            public String getId() {
+                return arr[num];
+            }
+
+            @Override
+            public void setId(String id) {
+                //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            @Override
+            public String getName() {
+                return "User #" + num;
+            }
+
+            @Override
+            public void setName(String name) {
+                //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            @Override
+            public String getFirstName() {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            @Override
+            public void setFirstName(String firstName) {
+                //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            @Override
+            public String getMiddleName() {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            @Override
+            public void setMiddleName(String middleName) {
+                //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            @Override
+            public String getLastName() {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            @Override
+            public void setLastName(String lastName) {
+                //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            @Override
+            public String getLink() {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            @Override
+            public void setLink(String link) {
+                //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            @Override
+            public String getUsername() {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            @Override
+            public void setUsername(String username) {
+                //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            @Override
+            public String getBirthday() {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            @Override
+            public void setBirthday(String birthday) {
+                //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            @Override
+            public GraphLocation getLocation() {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            @Override
+            public void setLocation(GraphLocation location) {
+                //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            @Override
+            public <T extends GraphObject> T cast(Class<T> graphObjectClass) {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            @Override
+            public Map<String, Object> asMap() {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            @Override
+            public JSONObject getInnerJSONObject() {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            @Override
+            public Object getProperty(String propertyName) {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            @Override
+            public void setProperty(String propertyName, Object propertyValue) {
+                //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            @Override
+            public void removeProperty(String propertyName) {
+                //To change body of implemented methods use File | Settings | File Templates.
+            }
+        });   }
+        return users;
     }
 
 }

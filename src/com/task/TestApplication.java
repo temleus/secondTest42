@@ -4,8 +4,11 @@ import android.app.Application;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import com.task.db.UserDbHelper;
+import com.task.json.Friend;
 
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Leus Artem
@@ -14,8 +17,9 @@ import java.util.Calendar;
 public class TestApplication extends Application {
 
     private volatile UserDbHelper.UserEntity iAm;
-//    public boolean synchronizedWithFB = false;
     private final String FB_SYNC_KEY = "FB_SYNC_KEY";
+
+//    public Map<String, Friend> friends = new HashMap<String, Friend>();
 
     @Override
     public void onCreate() {

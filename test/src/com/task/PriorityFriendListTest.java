@@ -48,7 +48,7 @@ public class PriorityFriendListTest {
         Assert.assertTrue(GsonHelper.deserialize(json).equals(friendList));
     }
 
-    /*@Test
+    @Test
     public void hasPrioritySpinnerTest(){
         ListView listView = friendListFragment.getListView();
         assertNotNull(listView);
@@ -59,5 +59,5 @@ public class PriorityFriendListTest {
         View listRowView = adapter.getView(0, null, null);
         assertNotNull(listRowView);
         assertNotNull(listRowView.findViewById(R.id.priority_spinner));
-    }*/
+    }
 }
