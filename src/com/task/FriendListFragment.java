@@ -21,7 +21,6 @@ import com.task.json.GsonHelper;
 
 import java.util.*;
 
-import static com.task.Utils.getU;
 import static com.task.Utils.isFbAuthenticated;
 
 /**
@@ -51,11 +50,6 @@ public class FriendListFragment extends SherlockListFragment {
         public void run() {
             if (adapter != null && adapter.isEmpty()) {
                 for (GraphUser user : fbUsers) adapter.add(user);
-//                if(!adapter.isEmpty()){
-//                    adapter.clear();
-//                }
-//                Collection<GraphUser> prioritizedFbFriends = Utils.sortByPriority(prioritizedFriends, fbUsers);
-//                for (GraphUser user : fbUsers) adapter.add(user);
             }
             setLoading(getView(), false);
         }
@@ -129,7 +123,6 @@ public class FriendListFragment extends SherlockListFragment {
             public void onCompleted(List<GraphUser> users, Response response) {
                     /* invoked in UI thread*/
                 FriendListFragment.this.fbUsers = users;
-//                FriendListFragment.this.fbUsers = getU();
                 if(prioritizedFriends.isEmpty()){
                     for(GraphUser fbUser: fbUsers){
                         // filling map with default priorities fbUsers
